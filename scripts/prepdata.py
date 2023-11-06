@@ -459,14 +459,14 @@ if __name__ == "__main__":
         delete_search_index(AZURE_SEARCH_TEXT_INDEX_NAME)
     create_and_populate_search_index_text()
 
-    # Create image index
-    if args.recreate:
-        delete_search_index(AZURE_SEARCH_IMAGE_INDEX_NAME)
-    create_and_populate_search_index_images()
+    # # Create image index
+    # if args.recreate:
+    #     delete_search_index(AZURE_SEARCH_IMAGE_INDEX_NAME)
+    # create_and_populate_search_index_images()
 
-    # Create wikipedia index
-    if args.recreate:
-        delete_search_index(AZURE_SEARCH_WIKIPEDIA_INDEX_NAME)
-    create_and_populate_search_index_wikipedia()
+    # # Create wikipedia index
+    # if args.recreate:
+    #     delete_search_index(AZURE_SEARCH_WIKIPEDIA_INDEX_NAME)
+    # create_and_populate_search_index_wikipedia()
  
     print("Completed successfully")

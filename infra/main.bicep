@@ -44,10 +44,10 @@ param embeddingDeploymentName string = 'embedding'
 param embeddingDeploymentCapacity int = 30
 param embeddingModelName string = 'text-embedding-ada-002'
 
-param visionAiServiceName string = ''
-param visionAiResourceGroupName string = ''
-param visionAiResourceGroupLocation string = location
-param visionAiSkuName string = 'S1'
+// param visionAiServiceName string = ''
+// param visionAiResourceGroupName string = ''
+// param visionAiResourceGroupLocation string = location
+// param visionAiSkuName string = 'S1'
 
 @description('Id of the user or app to assign application roles')
 param principalId string = ''
@@ -74,9 +74,9 @@ resource openAiResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' exi
   name: !empty(openAiResourceGroupName) ? openAiResourceGroupName : resourceGroup.name
 }
 
-resource visionAiResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' existing = if (!empty(visionAiResourceGroupName)) {
-  name: !empty(visionAiResourceGroupName) ? visionAiResourceGroupName : resourceGroup.name
-}
+// resource visionAiResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' existing = if (!empty(visionAiResourceGroupName)) {
+//   name: !empty(visionAiResourceGroupName) ? visionAiResourceGroupName : resourceGroup.name
+// }
 
 resource searchServiceResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' existing = if (!empty(searchServiceResourceGroupName)) {
   name: !empty(searchServiceResourceGroupName) ? searchServiceResourceGroupName : resourceGroup.name
@@ -126,19 +126,19 @@ module openAi 'core/ai/aiservices.bicep' = {
   }
 }
 
-module visionAi 'core/ai/aiservices.bicep' = {
-  name: 'visionai'
-  scope: visionAiResourceGroup
-  params: {
-    name: !empty(visionAiServiceName) ? visionAiServiceName : '${abbrs.cognitiveServicesAccounts}visionai-${resourceToken}'
-    kind: 'ComputerVision'
-    location: visionAiResourceGroupLocation
-    tags: tags
-    sku: {
-      name: visionAiSkuName
-    }
-  }
-}
+// module visionAi 'core/ai/aiservices.bicep' = {
+//   name: 'visionai'
+//   scope: visionAiResourceGroup
+//   params: {
+//     name: !empty(visionAiServiceName) ? visionAiServiceName : '${abbrs.cognitiveServicesAccounts}visionai-${resourceToken}'
+//     kind: 'ComputerVision'
+//     location: visionAiResourceGroupLocation
+//     tags: tags
+//     sku: {
+//       name: visionAiSkuName
+//     }
+//   }
+// }
 
 // The application frontend
 module backend 'core/host/appservice.bicep' = {
@@ -161,8 +161,8 @@ module backend 'core/host/appservice.bicep' = {
       AZURE_SEARCH_IMAGE_INDEX_NAME: searchImageIndexName 
       AZURE_SEARCH_TEXT_INDEX_NAME: searchTextIndexName
       AZURE_SEARCH_WIKIPEDIA_INDEX_NAME: searchWikipediaIndexName
-      AZURE_VISIONAI_ENDPOINT: visionAi.outputs.endpoint
-      AZURE_VISIONAI_KEY: visionAi.outputs.key
+      // AZURE_VISIONAI_ENDPOINT: visionAi.outputs.endpoint
+      // AZURE_VISIONAI_KEY: visionAi.outputs.key
     }
   }
 }
@@ -196,7 +196,7 @@ module storage 'core/storage/storage-account.bicep' = {
     publicNetworkAccess: 'Enabled'
     allowBlobPublicAccess: true
     sku: {
-      name: 'Standard_ZRS'
+      name: 'Standard_LRS'
     }
     deleteRetentionPolicy: {
       enabled: true
@@ -222,15 +222,15 @@ module openAiRoleUser 'core/security/role.bicep' = if (createRoleForUser) {
   }
 }
 
-module visionAiRoleUser 'core/security/role.bicep' = if (createRoleForUser) {
-  scope: visionAiResourceGroup
-  name: 'visionai-role-user'
-  params: {
-    principalId: principalId
-    roleDefinitionId: '93586559-c37d-4a6b-ba08-b9f0940c2d73'
-    principalType: 'User'
-  }
-}
+// module visionAiRoleUser 'core/security/role.bicep' = if (createRoleForUser) {
+//   scope: visionAiResourceGroup
+//   name: 'visionai-role-user'
+//   params: {
+//     principalId: principalId
+//     roleDefinitionId: '93586559-c37d-4a6b-ba08-b9f0940c2d73'
+//     principalType: 'User'
+//   }
+// }
 
 module storageRoleUser 'core/security/role.bicep' = if (createRoleForUser) {
   scope: storageResourceGroup
@@ -330,8 +330,8 @@ output AZURE_RESOURCE_GROUP string = resourceGroup.name
 output AZURE_OPENAI_SERVICE string = openAi.outputs.name
 output AZURE_OPENAI_DEPLOYMENT_NAME string = embeddingDeploymentName
 
-output AZURE_VISIONAI_ENDPOINT string = visionAi.outputs.endpoint
-output AZURE_VISIONAI_KEY string = visionAi.outputs.key
+// output AZURE_VISIONAI_ENDPOINT string = visionAi.outputs.endpoint
+// output AZURE_VISIONAI_KEY string = visionAi.outputs.key
 
 output AZURE_SEARCH_SERVICE_ENDPOINT string = searchService.outputs.endpoint
 output AZURE_SEARCH_TEXT_INDEX_NAME string = searchTextIndexName
